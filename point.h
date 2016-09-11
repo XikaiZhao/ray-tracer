@@ -39,6 +39,7 @@ public:
   Point  operator+ (const Point& p);
   Point  operator- (const Point& p);
   Point  operator* (const double c); 
+  Point  operator/ (const double c); 
  
   Point& operator+= (const Point& p);
   Point& operator-= (const Point& p);
@@ -85,6 +86,16 @@ inline Point Point :: operator* (const double c){
   Point res;
   for (int k=0;k<3; k++) {
     res[k] = value[k] * c;
+  }
+  return res;
+}
+
+inline Point Point :: operator/ (const double c){ 
+  if (c < 1e-10) { std::cerr<<"Divided by a # close to 0!"<<std::endl; exit(1);}
+  
+  Point res;
+  for (int k=0;k<3; k++) {
+    res[k] = value[k] / c;
   }
   return res;
 }
