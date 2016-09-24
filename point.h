@@ -26,9 +26,6 @@ public:
   Point(const Point& p) { value[0] = p.value[0]; value[1] = p.value[1]; value[2] = p.value[2]; }
   void init(const Point& p) { value[0] = p.value[0]; value[1] = p.value[1]; value[2] = p.value[2]; }
 
-  double square();
-  double l2Norm();
-
   double  operator[] (int i) const { return value[chkInd(i)]; }
   double& operator[] (int i) { return value[chkInd(i)]; }
   double  operator() (int i) const { return value[chkInd(i)]; }
@@ -43,10 +40,16 @@ public:
  
   Point& operator+= (const Point& p);
   Point& operator-= (const Point& p);
+ 
+  double square();
+  double l2Norm();
+  
+  void normalize();
   
   double dot(const Point& p);
   Point cross(const Point& p);
   
+  Point arbitraryPerp();  // output a unit perpendicular vector
 
 protected:
   int chkInd(int i) const {  // index check if DEBUG_ARRAY is defined
@@ -61,7 +64,7 @@ protected:
   };
 };
 
-std::ostream& operator<< (std::ostream&, const Point&);
+std::ostream&  operator<< (std::ostream& os, const Point& p); 
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -91,7 +94,10 @@ inline Point Point :: operator* (const double c){
 }
 
 inline Point Point :: operator/ (const double c){ 
-  if (c < 1e-10) { std::cerr<<"Divided by a # close to 0!"<<std::endl; exit(1);}
+  if (c < 1e-10) { 
+    std::cerr<<"in file"<<__FILE__<<", line"<<__LINE__<<"divided by a # close to 0!"<<std::endl; 
+    exit(1);
+  }
   
   Point res;
   for (int k=0;k<3; k++) {
