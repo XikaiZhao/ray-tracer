@@ -1,6 +1,7 @@
 # ray-tracer
 
 Make and run:
+
 make
 ./raytracer
 
