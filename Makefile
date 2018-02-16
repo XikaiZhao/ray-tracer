@@ -1,32 +1,18 @@
-CC = g++ -std=c++11
+CC = g++ -std=c++11 -Ofast -march=native
 CFLAGS  = -Wall
 LIBS = -fopenmp
 
-all: raytracer
+SOURCES = main.cpp raytracer.cpp scene.cpp sceneObj.cpp color.cpp viewPort.cpp point.cpp
+OBJECTS = $(SOURCES:.cpp=.o)
+EXECUTABLE = raytracer
 
-raytracer: main.o raytracer.o scene.o sceneObj.o color.o viewPort.o point.o
-	$(CC) $(CFLAGS) $(LIBS) -O3 -o raytracer main.o raytracer.o scene.o sceneObj.o color.o viewPort.o point.o
+all: $(SOURCES) $(EXECUTABLE) 
 
-main.o: main.cpp
-	$(CC) $(CFLAGS) -c main.cpp $(LIBS)
+$(EXECUTABLE): $(OBJECTS)
+	$(CC) $(CFLAGS) $(LIBS) $(OBJECTS) -o $@
 
-raytracer.o: raytracer.cpp
-	$(CC) $(CFLAGS) -c raytracer.cpp $(LIBS) 	
-
-scene.o: scene.cpp
-	$(CC) $(CFLAGS) -c scene.cpp $(LIBS)
-
-sceneObj.o: sceneObj.cpp
-	$(CC) $(CFLAGS) -c sceneObj.cpp $(LIBS)
-
-color.o: color.cpp
-	$(CC) $(CFLAGS) -c color.cpp $(LIBS)
-
-viewPort.o: viewPort.cpp
-	$(CC) $(CFLAGS) -c viewPort.cpp $(LIBS)
-
-point.o: point.cpp
-	$(CC) $(CFLAGS) -c point.cpp $(LIBS)
+.cpp.o:
+	$(CC) $(CFLAGS) -c $< $(LIBS) 
 
 .PHONY:
 clean:

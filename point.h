@@ -12,11 +12,10 @@
 
 ******************************************************************************/
 #include <iostream>
-
-//#define DEBUG_POINT
-#ifdef DEBUG_POINT
 #include <stdlib.h>
-#endif
+#include <assert.h>
+
+#define NDEBUG
 
 class Point {
 public:
@@ -26,10 +25,22 @@ public:
   Point(const Point& p) { value[0] = p.value[0]; value[1] = p.value[1]; value[2] = p.value[2]; }
   void init(const Point& p) { value[0] = p.value[0]; value[1] = p.value[1]; value[2] = p.value[2]; }
 
-  double  operator[] (int i) const { return value[chkInd(i)]; }
-  double& operator[] (int i) { return value[chkInd(i)]; }
-  double  operator() (int i) const { return value[chkInd(i)]; }
-  double& operator() (int i) { return value[chkInd(i)]; }
+  double  operator[] (int i) const { 
+    assert(i >= 0 && i < 3);
+    return value[i]; 
+  }
+  double& operator[] (int i) { 
+    assert(i >= 0 && i < 3);
+    return value[i];
+  }
+  double  operator() (int i) const { 
+    assert(i >= 0 && i < 3);
+    return value[i];
+  }
+  double& operator() (int i) { 
+    assert(i >= 0 && i < 3);
+    return value[i]; 
+  }
 
   Point& operator= (const Point& p) { init(p); return *this;}
   
@@ -50,18 +61,6 @@ public:
   Point cross(const Point& p);
   
   Point arbitraryPerp();  // output a unit perpendicular vector
-
-protected:
-  int chkInd(int i) const {  // index check if DEBUG_ARRAY is defined
-    #ifdef DEBUG_POINT
-        if(i<0 || i>2) {
-            std::cerr << "Index out of range in Point: !( 0<="
-            << i << "<=2" << " )" << std::endl;
-            exit(1);
-        }
-    #endif
-    return i;
-  };
 };
 
 std::ostream&  operator<< (std::ostream& os, const Point& p); 
