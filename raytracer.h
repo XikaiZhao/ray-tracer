@@ -16,8 +16,8 @@ private:
   Scene scene;
   ViewPort* view;
 
-  Color computeDiffusion(SceneObj* obj, Light light, Point p); 
-  Color computeSpecular(SceneObj* obj, Light light, Point p); 
+  Color computeDiffusion(SceneObj* obj, Light* light, Point p); 
+  Color computeSpecular(SceneObj* obj, Light* light, Point p); 
   Color computeReflection(SceneObj* obj, Ray r, Point p, int depth, bool reflection);
 };
 #endif //RAYTRACER_H

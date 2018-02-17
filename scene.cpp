@@ -1,4 +1,3 @@
-
 #include "scene.h"
 #include <vector>
 
@@ -24,8 +23,8 @@ Intersection Scene::intersection(Ray r) {
   return x;
 }
 
-bool Scene::shining(Light light, Point p) {
- return ! lineSegmentIntersects(light.center(), p);
+bool Scene::shining(Light* light, Point p) {
+ return ! lineSegmentIntersects(light->center(), p);
 }
 
 bool Scene::lineSegmentIntersects(Point p1, Point p) {
@@ -43,10 +42,10 @@ bool Scene::lineSegmentIntersects(Point p1, Point p) {
   return false;
 }
 
-double Scene::proportionShining(SphericalLight light, Point p, int trials) {
+double Scene::proportionShining(SphericalLight* light, Point p, int trials) {
   int numShining = 0;
   for (int i=0; i<trials; i++) {
-    Point ptOnLight = light.randomPointOnLight(p);
+    Point ptOnLight = light->randomPointOnLight(p);
     if ( ! lineSegmentIntersects(ptOnLight, p))
       numShining += 1;
   }

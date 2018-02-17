@@ -8,7 +8,7 @@ class Color {
   Color() {
     red = 0; green = 0; blue = 0; alpha = 0;
   }
-
+  Color(int r, int g, int b) { init(r, g, b); }
   int getRed() const { return red; }
   int getGreen() const { return green; }
   int getBlue() const { return blue; }

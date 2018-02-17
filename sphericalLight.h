@@ -4,12 +4,13 @@
 #include "point.h"
 #include "color.h"
 #include "light.h"
+#include "sceneObj.h"
 #include <stdlib.h>
 #include <time.h>
 
-class SphericalLight : public Light {
+class SphericalLight : public Light, public Sphere {
  public:
-  SphericalLight(Point p, double r, Color c) : Light(p, c), rad(r) {}
+  SphericalLight(Point p, double r, Color c) : Light(p, c), Sphere(p, r, c), rad(r) {}
   double radius() const { return rad; }
   Point randomPointOnLight(Point p);
  private:
@@ -23,12 +24,11 @@ class SphericalLight : public Light {
  * @return A random point on this disk.
  */
 inline Point SphericalLight::randomPointOnLight(Point p) {
-  Point e2 = (center()-p).arbitraryPerp();
-  Point e3 = (center()-p).cross(e2);
+  Point e2 = (Light::center()-p).arbitraryPerp();
+  e2 = e2*radius();
+  Point e3 = (Light::center()-p).cross(e2);
   e3.normalize();
   e3 = e3*radius();
-  e2.normalize();
-  e2 = e2*radius();
 
   //std::cout << e2 << ", " << e3 << std::endl;
   //srand(time(NULL));
@@ -38,6 +38,6 @@ inline Point SphericalLight::randomPointOnLight(Point p) {
     y = ((double)rand())/((double)RAND_MAX)*2 - 1;
   } while (x*x + y*y > 1);
 
-  return center() + (e2 * x + e3 * y);
+  return Light::center() + (e2 * x + e3 * y);
 }
 #endif // SPHERICALLIGHT_H

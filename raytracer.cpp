@@ -6,7 +6,8 @@
 Color Raytracer :: compute(Ray r, int depth, bool reflection) {
   double t = Scene::VIEW_LIMIT;
   SceneObj* ns = NULL;
-
+  bool hitSphericalLight = false;
+  
   for (unsigned int i=0; i<scene.sizeObj(); ++i){
     std::vector<double> inter = scene.object(i)->intersection(r);
     if (inter.size() != 0){
@@ -18,24 +19,36 @@ Color Raytracer :: compute(Ray r, int depth, bool reflection) {
     }
   }
 
+  for (unsigned int i=0; i<scene.sizeSphericalLight(); ++i) {
+    std::vector<double> inter = scene.sphericalLight(i)->intersection(r);
+    if (inter.size() != 0){
+      double closest = inter[0];
+      if (closest < t && closest >1e-4) {
+        t = closest;
+        ns = scene.sphericalLight(i);
+	hitSphericalLight = true;
+      }
+    }
+  }
+
   Color total;
   total.init(0,0,0);
   if (ns == NULL) {
     total.init(0,0,0);
-  }
-  else {
+  } else if (hitSphericalLight) {
+    Point p = r.trace(t);
+    total = ns->getColor(p);
+  } else {
     Point p = r.trace(t);
     for (unsigned int i=0; i<scene.sizeLight(); ++i) {
       if (scene.shining(scene.light(i), p)) {
-//        double distToLight = (scene.light(i).center()-p).square();
-//        double diffusionFactor = std::min(1.,6/(5+distToLight));
         total = total + computeDiffusion(ns, scene.light(i), p);
         total = total + computeSpecular(ns, scene.light(i), p);       
       }
     }
 
     for (unsigned int i=0; i<scene.sizeSphericalLight(); ++i) {
-      SphericalLight light = scene.sphericalLight(i);
+      SphericalLight* light = scene.sphericalLight(i);
       double c = scene.proportionShining(light, p);
       total = total + computeDiffusion(ns, scene.sphericalLight(i), p)*c;
       total = total + computeSpecular(ns, scene.sphericalLight(i), p)*c;
@@ -44,7 +57,7 @@ Color Raytracer :: compute(Ray r, int depth, bool reflection) {
       total = total + computeReflection(ns, r, p, depth, reflection);
     }
     Color ambient;
-    ambient = ns->getColor(p)*.1;
+    ambient = ns->getColor(p)*.0;
     total = total+ambient;
   }
   
@@ -65,26 +78,26 @@ Color* Raytracer :: render() {
   return grid;
 }
 
-Color Raytracer :: computeDiffusion(SceneObj* obj, Light light, Point p) {
+Color Raytracer :: computeDiffusion(SceneObj* obj, Light* light, Point p) {
   Point normalVec = obj->normal(p);
   Point ptToEye = view->viewPoint()-p;
   ptToEye.normalize();
 
-  Point ptToLight = light.center()-p;
+  Point ptToLight = light->center()-p;
   ptToLight.normalize();
 
   Color diffuseCol;
-  diffuseCol = (obj->getColor(p))*(obj->diffusion())*pow(normalVec.dot(ptToLight),2);
+  diffuseCol = (obj->getColor(p))*(obj->diffusion())*fabs(normalVec.dot(ptToLight));
   
   return diffuseCol;
 }
 
-Color Raytracer :: computeSpecular(SceneObj* obj, Light light, Point p) {
+Color Raytracer :: computeSpecular(SceneObj* obj, Light* light, Point p) {
   Point normalVec = obj->normal(p);
   Point ptToEye = view->viewPoint()-p;
   ptToEye.normalize();
 
-  Point ptToLight = light.center()-p;
+  Point ptToLight = light->center()-p;
   Point reflect = ptToLight-(ptToLight - normalVec*ptToLight.dot(normalVec))*2;
   reflect.normalize();
 

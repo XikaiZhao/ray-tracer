@@ -19,8 +19,8 @@ class Scene {
   static const double VIEW_LIMIT;
   
   void addObject(SceneObj* obj) { objects.push_back(obj); }
-  void addLight(Light light) { lights.push_back(light); }
-  void addSphericalLight(SphericalLight light) {
+  void addLight(Light* light) { lights.push_back(light); }
+  void addSphericalLight(SphericalLight* light) {
     sphericalLights.push_back(light);
   }
 
@@ -28,36 +28,21 @@ class Scene {
   unsigned int sizeLight() { return lights.size(); }
   unsigned int sizeSphericalLight() { return sphericalLights.size(); }
   
-  SceneObj* object( int i );
-  Light light( int i );
-  SphericalLight sphericalLight(int i) { return sphericalLights[i]; }
+  SceneObj* object( int i ) { return objects[i];}
+  Light* light( int i ) { return lights[i]; }
 
-  bool shining(Light light, Point p);
+  SphericalLight* sphericalLight(int i) { return sphericalLights[i]; }
+
+  bool shining(Light* light, Point p);
   Intersection intersection(Ray r);
-  double proportionShining(SphericalLight light, Point p, int trials=20);
+  double proportionShining(SphericalLight* light, Point p, int trials=20);
   
  private:
   std::vector<SceneObj*> objects;
-  std::vector<Light> lights;
-  std::vector<SphericalLight> sphericalLights;
+  std::vector<Light*> lights;
+  std::vector<SphericalLight*> sphericalLights;
   bool lineSegmentIntersects(Point p1, Point p2);
   
 };
-
-
-////////////////////////////////////////////////////////////////////////inline functions
-inline SceneObj* Scene :: object(int i) {
-  return objects[i];
-}
-
-inline Light Scene::light(int i) {
-  return lights[i];
-}
-
-
-
-
-
-
 
 #endif //SCENE_H

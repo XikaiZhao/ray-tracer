@@ -1,11 +1,11 @@
 #include "point.h"
 #include <cmath>
 
-double Point :: square() { return pow(value[0],2) + pow(value[1],2) + pow(value[2],2);}
-double Point :: l2Norm() { return sqrt(square()); }
+double Point :: square() { return value[0]*value[0] + value[1]*value[1] + value[2]*value[2];}
+double Point :: l2Norm() { return sqrt(value[0]*value[0] + value[1]*value[1] + value[2]*value[2]); }
 
 void Point :: normalize() {
-  double len = l2Norm();
+  double len = sqrt(value[0]*value[0] + value[1]*value[1] + value[2]*value[2]);
   if (len < 1e-6) {
     std::cerr << "In file: "<<__FILE__<<", line: "<<__LINE__<<", length is close to 0!"<<std::endl;
     exit(1);
