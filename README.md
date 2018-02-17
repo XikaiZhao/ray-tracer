@@ -3,6 +3,7 @@
 Raytracer supporting rendering spheres, planes, triangles, point lights, spherical lights, as well as texture mapping, transparency and reflection simulation.
 
 Make: make
+
 Run: ./raytracer
 
 ### Example rendered images.
