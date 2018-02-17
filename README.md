@@ -1,6 +1,6 @@
 # ray-tracer
 
-Raytracer supporting rendering spheres, planes, triangles, point lights, spherical lights, as well as texture mapping, transparency and reflection simulation.
+Raytracer supporting rendering spheres, planes, triangles, point lights, spherical lights, as well as transparency and reflection simulation.
 
 Make: make
 
