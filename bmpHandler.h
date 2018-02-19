@@ -1,16 +1,17 @@
-
+#include <cstdio>
 #include <iostream>
 #include <fstream>
-#include "color.h"
 #include <string>
 #include <stdexcept>
+#include <vector>
+#include "color.h"
 
 using namespace std;
 
 // helper function for saveBMP();
 int outputInt(char buffer[], int index, int num, int arraySize) {
   if (index < 0 || index + 4 >= arraySize) {
-    throw std::invalid_argument("Can't write int to buffer, buffer too small.");
+    throw invalid_argument("Can't write int to buffer, buffer too small.");
   }
   for (int i=0; i<4; i++) {
     buffer[index++] = (char) (num%256);
@@ -62,8 +63,72 @@ void saveBMP(string filename, Color colour[], int width, int height) {
     outputBuffer.close();
 
     delete [] buffer;
-  } catch(std::exception& e) {
-    std::cerr << e.what() << std::endl;
+  } catch(exception& e) {
+    cerr << e.what() << endl;
+    exit(1);
+  }
+}
+
+int inputInt(ifstream& fis) {
+  int num = 0;
+  for (int i=0; i<4; i++) {
+    num = num + (fis.get()<<8*i);
+  }
+  return num;
+}
+
+int inputInt_2bytes(ifstream& fis) {
+  int num = 0;
+  for (int i=0; i<2; i++) {
+    num = num + (fis.get()<<8*i);
+  }
+  return num;
+}
+
+vector<vector<Color> > toColourArray(char contents[], int horiz, int vert, int channels) {
+  int pad = 0; // bmp pads rows to multiples of 4
+  if ((channels*horiz) % 4 != 0) pad = 4 - ((channels*horiz) % 4); 
+  
+  vector<vector<Color> > cols(vert);
+  for (int y=vert-1; y>=0; y--) {
+    cols[y].resize(horiz);
+    for (int x=0; x<horiz; x++) {
+      int index = (vert-y-1)*(channels*horiz+pad) + channels*x;
+      int blue = (int)contents[index], 
+          green = (int)contents[index+1],
+          red = (int)contents[index+2]; 
+          //alpha=(int)contents[index+channels];
+      if (blue < 0) blue = blue + 256;
+      if (green < 0) green = green + 256;
+      if (red < 0) red = red + 256;
+      //if (alpha < 0) alpha = alpha + 256;
+      cols[y][x] = Color(red, green, blue);
+    }
+  }
+  return cols;
+}
+
+vector<vector<Color> > readBMP(string filename) {
+  try {
+    ifstream fis(filename, ios::binary);
+    fis.ignore(10);
+    int offset = inputInt(fis);
+    fis.ignore(4);
+    int horiz = inputInt(fis), vert = inputInt(fis);
+    fis.ignore(2);
+
+    int bitsPerPixel = inputInt_2bytes(fis);
+    int channels = bitsPerPixel/8;
+    fis.ignore(offset - 30);
+    int pad = 0; // bmp pads rows to multiples of 4
+    if ((channels*horiz) % 4 != 0) pad = 4 - ((channels*horiz) % 4); 
+    char* contents = new char[(channels*horiz+pad)*vert];
+    fis.read(contents, (channels*horiz+pad)*vert);
+    vector<vector<Color> > cols = toColourArray(contents, horiz, vert, channels);
+    fis.close();
+    return cols;
+  } catch(exception& e) {
+    cerr << e.what() << endl;
     exit(1);
   }
 }
