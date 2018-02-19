@@ -44,10 +44,10 @@ public:
 
   Point& operator= (const Point& p) { init(p); return *this;}
   
-  Point  operator+ (const Point& p);
-  Point  operator- (const Point& p);
-  Point  operator* (const double c); 
-  Point  operator/ (const double c); 
+  Point  operator+ (const Point& p) const;
+  Point  operator- (const Point& p) const;
+  Point  operator* (const double c) const; 
+  Point  operator/ (const double c) const; 
  
   Point& operator+= (const Point& p);
   Point& operator-= (const Point& p);
@@ -68,7 +68,7 @@ std::ostream&  operator<< (std::ostream& os, const Point& p);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 // inline functions
-inline Point Point :: operator+ (const Point& p){
+inline Point Point :: operator+ (const Point& p) const{
   Point res;
   for (int k=0;k<3; k++) {
     res[k] = value[k] + p.value[k];
@@ -76,7 +76,7 @@ inline Point Point :: operator+ (const Point& p){
   return res;
 }
 
-inline Point Point :: operator- (const Point& p){ 
+inline Point Point :: operator- (const Point& p) const{ 
   Point res;
   for (int k=0;k<3; k++) {
     res[k] = value[k] - p.value[k];
@@ -84,7 +84,7 @@ inline Point Point :: operator- (const Point& p){
   return res;
 }
 
-inline Point Point :: operator* (const double c){ 
+inline Point Point :: operator* (const double c) const{ 
   Point res;
   for (int k=0;k<3; k++) {
     res[k] = value[k] * c;
@@ -92,7 +92,7 @@ inline Point Point :: operator* (const double c){
   return res;
 }
 
-inline Point Point :: operator/ (const double c){ 
+inline Point Point :: operator/ (const double c) const{ 
   if (c < 1e-10) { 
     std::cerr<<"in file"<<__FILE__<<", line"<<__LINE__<<"divided by a # close to 0!"<<std::endl; 
     exit(1);
